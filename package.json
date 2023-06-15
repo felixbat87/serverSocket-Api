@@ -1,0 +1,19 @@
+{
+  "name": "graficas",
+  "version": "1.0.0",
+  "description": "recibiendo informacion para graficas en tiempo real",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Felix Otero Museo del Canal",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "request": "^2.88.2",
+    "socket.io": "^4.6.2"
+  }
+}
