@@ -35,34 +35,29 @@ app.get("/", (req, res) => {
 
 class GraficaData {
 
-  meses = ["enero", "febrero", "marzo", "abril"];
+  labels = []=[];
   valores = [] = [0, 0, 0, 0];
 
   constructor() {}
+
+  setLabels(labels=String=[]){
+    this.labels=labels;
+  }
 
   getDataGrafica() {
     return [
       
         {
           data:this.valores,
-          label: "Ventas"
+          label: 'Preguntas'
         }
       
     ];
   }
 
-  incrementarValor(mes=String,valor=Number){
+  incrementarValor(opcion=Number,valor=Number){
 
-    mes=mes.toLowerCase().trim();
-
-    for (let i in this.meses){
-
-        if(this.meses[i]=== mes){
-
-            this.valores[i]+= valor;
-        }
-
-    }
+    this.valores[opcion] += valor;
 
 
     return this.getDataGrafica()
@@ -84,10 +79,10 @@ app.get('/grafica', (req, res) => {
 
 app.post('/grafica',(req,res)=>{
 
-  const mes =req.body.mes;
+  const opcion =req.body.opcion;
   const unidades= Number(req.body.unidades);
 
-  grafica.incrementarValor(mes,unidades);
+  grafica.incrementarValor(opcion,unidades);
 
   io.emit('cambio-grafica',grafica.getDataGrafica());
 
