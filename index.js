@@ -116,13 +116,34 @@ function mapaSocket(socket){
   socket.on("marcador-nuevo",(marcador=Marcador)=>{
  
     mapa.agregarMarcador(marcador);
-  
     socket.broadcast.emit("marcador-nuevo",marcador);
-    console.log(marcador);
+
+      
+  });
+
+//Borrar marcador 
+  socket.on("marcador-borrar",(id=String)=>{
+ 
+    mapa.borrarMarcador(id);
+    socket.broadcast.emit("marcador-borrar",id);
+    
+      
+  });
+  //Mover Marcador
+  socket.on("marcador-mover",(marcador=Marcador)=>{
+ 
+    mapa.moverMarcador(marcador);
+    socket.broadcast.emit("marcador-mover",marcador);
+    
       
   });
 
 }
+
+
+
+
+
 
 app.get('/mapa',(req,res)=>{
 
