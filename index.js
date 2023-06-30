@@ -6,7 +6,7 @@ const cors = require("cors");
 app.use(cors({ origin: true, credentials: true }));
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server,{ cors: { origin: true, credentials: true } });
+const io = new Server(server, { cors: { origin: true, credentials: true } });
 const bodyParser = require("body-parser");
 //uso url con parametros
 app.use(express.urlencoded({ extended: true }));
@@ -24,68 +24,110 @@ server.listen(PORT, () => {
 
 io.on("connection", (socket) => {
   console.log("Socket - EXP: ", socket.id);
+  mapaSocket(socket);
+
 });
 
-app.get("/", (req, res) => {
-  res.json({
-    ok: true,
-    mensaje: "Servicio recibido",
-  });
-});
 
-class GraficaData {
 
-  labels = []=[];
-  valores = [] = [0, 0, 0, 0];
+class Marcador {
 
-  constructor() {}
+  constructor(
+    id = String,
+    nombre = String,
+    lng = Number,
+    lat = Number,
+    color = String
+  ) {}
 
-  setLabels(labels=String=[]){
-    this.labels=labels;
+}
+
+class Mapa{
+
+  marcadores =Marcador={
+  
+
+   '1': {
+      id: '1',
+      nombre: 'Fernando',
+      lng: -75.75512993582937,
+      lat: 45.349977429009954,
+      color: '#dd8fee'
+    },
+   '2': {
+      id: '2',
+      nombre: 'Amy',
+      lng: -75.75195645527508, 
+      lat: 45.351584045823756,
+      color: '#790af0'
+    },
+   '3': {
+      id: '3',
+      nombre: 'Orlando',
+      lng: -75.75900589557777, 
+      lat: 45.34794635758547,
+      color: '#19884b'
+    }
+
+
+
+
   }
+  
 
-  getDataGrafica() {
-    return [
-      
-        {
-          data:this.valores,
-          label: 'Preguntas'
-        }
-      
-    ];
-  }
+ constructor(){}
 
-  incrementarValor(opcion=Number,valor=Number){
+ getMarcadores(){
+  
+   return this.marcadores;
 
-    this.valores[opcion] += valor;
+ }
+
+ agregarMarcador(marcador=Marcador){
+
+  this.marcadores[marcador.id] =marcador;
 
 
-    return this.getDataGrafica()
+ }
 
-  }
+ borrarMarcador(id=String){
 
+  delete this.marcadores[id];
+  return this.getMarcadores();
+
+ }
+
+ moverMarcador(marcador=Marcador){
+
+  this.marcadores[marcador.id].lng=marcador.lng;
+  this.marcadores[marcador.id].lat=marcador.lat;
+
+ }
 
 
 }
 
+//Mapa Rest Servir
+//Sockets conexion
+const mapa=new Mapa();
 
-const grafica = new GraficaData;
+function mapaSocket(socket){
 
-app.get('/grafica', (req, res) => {
+  socket.on("marcador-nuevo",(marcador=Marcador)=>{
+ 
+    mapa.agregarMarcador(marcador);
+  
+    socket.broadcast.emit("marcador-nuevo",marcador);
+    console.log(marcador);
+      
+  });
 
-  res.json(grafica.getDataGrafica());
+}
+
+app.get('/mapa',(req,res)=>{
+
+  res.json(mapa.getMarcadores());
 
 });
 
-app.post('/grafica',(req,res)=>{
 
-  const opcion =req.body.opcion;
-  const unidades= Number(req.body.unidades);
-
-  grafica.incrementarValor(opcion,unidades);
-
-  io.emit('cambio-grafica',grafica.getDataGrafica());
-
-  res.json(grafica.getDataGrafica());
-
-});
